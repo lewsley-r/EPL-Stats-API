@@ -5,14 +5,18 @@ import httpx
 app = FastAPI()
 
 
-@app.get("/player/goals")
-def get_top_10_players_by_goals():
-    url = "https://www.premierleague.com/stats/top/players/goals"
+def get_stat(endpoint_postfix):
+    url = f"https://www.premierleague.com/stats/top/{endpoint_postfix}"
     headers = {
         "user-agent": "mozilla/5.0 (x11; linux x86_64) applewebkit/537.36 (khtml, like gecko) chrome/123.0.0.0 safari/537.36"}
-
     resp = httpx.get(url, headers=headers)
-    html_goals = HTMLParser(resp.text)
+    html = HTMLParser(resp.text)
+    return html
+
+
+@app.get("/player/goals")
+def get_top_10_players_by_goals():
+    html_goals = get_stat('players/goals')
 
     player_goals = html_goals.css("tr.table__row")
     players = []
